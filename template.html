@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nursing Plans</title>
+</head>
+<body>
+    <h1>Nursing Plans</h1>
+    <ul>
+        {{range .}}
+            <li>Nurse ID: {{.NurseID}}, Hospital ID: {{.HospitalID}}, Ward ID: {{.WardID}}, Day 1: {{.Day1}}, Day 2: {{.Day2}}, Day 3: {{.Day3}}, Day 4: {{.Day4}}, Day 5: {{.Day5}},</li>
+        {{end}}
+    </ul>
+</body>
+</html>
