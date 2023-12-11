@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nurse Shift Plans</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        @media (max-width: 600px) {
+            table {
+                font-size: 10px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Nurse Shift Plans</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>NurseID</th>
+                <th>Day1</th>
+                <th>Day2</th>
+                <th>Day3</th>
+                <th>Day4</th>
+                <th>Day5</th>
+                <th>Day6</th>
+                <th>Day7</th>
+                <th>Day8</th>
+                <th>Day9</th>
+                <th>Day10</th>
+                <th>Day11</th>
+                <th>Day12</th>
+                <th>Day13</th>
+                <th>Day14</th>
+                <th>Day15</th>
+                <th>Day16</th>
+                <th>Day17</th>
+                <th>Day18</th>
+                <th>Day19</th>
+                <th>Day20</th>
+                <th>Day21</th>
+                <th>Day22</th>
+                <th>Day23</th>
+                <th>Day24</th>
+                <th>Day25</th>
+                <th>Day26</th>
+                <th>Day27</th>
+                <th>Day28</th>
+                <th>Day29</th>
+                <th>Day30</th>
+                <th>Day31</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .}}
+            <tr>
+                <td>{{.NurseID}}</td>
+                <td>{{.Day1}}</td>
+                <td>{{.Day2}}</td>
+                <td>{{.Day3}}</td>
+                <td>{{.Day4}}</td>
+                <td>{{.Day5}}</td>
+                <td>{{.Day6}}</td>
+                <td>{{.Day7}}</td>
+                <td>{{.Day8}}</td>
+                <td>{{.Day9}}</td>
+                <td>{{.Day10}}</td>
+                <td>{{.Day11}}</td>
+                <td>{{.Day12}}</td>
+                <td>{{.Day13}}</td>
+                <td>{{.Day14}}</td>
+                <td>{{.Day15}}</td>
+                <td>{{.Day16}}</td>
+                <td>{{.Day17}}</td>
+                <td>{{.Day18}}</td>
+                <td>{{.Day19}}</td>
+                <td>{{.Day20}}</td>
+                <td>{{.Day21}}</td>
+                <td>{{.Day22}}</td>
+                <td>{{.Day23}}</td>
+                <td>{{.Day24}}</td>
+                <td>{{.Day25}}</td>
+                <td>{{.Day26}}</td>
+                <td>{{.Day27}}</td>
+                <td>{{.Day28}}</td>
+                <td>{{.Day29}}</td>
+                <td>{{.Day30}}</td>
+                <td>{{.Day31}}</td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+
+</body>
+</html>
