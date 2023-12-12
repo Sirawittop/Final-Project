@@ -1,0 +1,3 @@
+SELECT Nurses.id , Nurses.`Firstname` , Nurses.`Lastname` , Plans.`Day1` , Plans.`Day2` , Plans.`Day3` , Plans.`Day4` , Plans.`Day5` , Plans.`Day6` , Plans.`Day7` , Plans.`Day8` , Plans.`Day9` , Plans.`Day10` , Plans.`Day11` , Plans.`Day12` , Plans.`Day13` , Plans.`Day14` , Plans.`Day15` , Plans.`Day16` , Plans.`Day17` , Plans.`Day18` , Plans.`Day19` , Plans.`Day20` , Plans.`Day21` , Plans.`Day22` , Plans.`Day23` , Plans.`Day24` , Plans.`Day25` , Plans.`Day26` , Plans.`Day27` , Plans.`Day28` , Plans.`Day29` , Plans.`Day30` , Plans.`Day31`
+FROM Nurses
+JOIN Plans ON NurseID = Nurses.id
