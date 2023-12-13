@@ -210,6 +210,7 @@ func main() {
 						SUM(
 							CASE
 								WHEN Day1 IN (1, 6, 11, 15, 19) THEN 1
+								
 								ELSE 0
 							END + CASE
 								WHEN Day2 IN (1, 6, 11, 15, 19) THEN 1
@@ -833,7 +834,6 @@ func main() {
 				AND d.NurseID = e.NurseID
 				AND e.NurseID = f.NurseID
 		) calinfo ON Nursesinfo.Nurse_ID = calinfo.NurseID
-
 
 		`).Scan(&plansWithNurseInfo)
 
