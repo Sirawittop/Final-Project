@@ -3,11 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"nurse_shift/model"
 	"reflect"
 
-	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -48,6 +46,25 @@ func getPlanWithTypeForNurse(nurseIndex int, planWithType []string) []string {
 	return planWithType[start:end]
 }
 
+func calculateMorning(nurseIndex int, planWithType []string) (int, int, int) {
+	planWithTypeForNurse := getPlanWithTypeForNurse(nurseIndex, planWithType)
+	mor := 0
+	aft := 0
+	nin := 0
+	for _, planType := range planWithTypeForNurse {
+		if planType == "ช" || planType == "T" || planType == "ช/rบ" || planType == "ช/rด" || planType == "ช2" {
+			mor++
+		}
+		if planType == "บ" || planType == "rช/บ" || planType == "บ/rด" {
+			aft++
+		}
+		if planType == "ด" || planType == "rบ/ด" || planType == "rช/ด" {
+			nin++
+		}
+	}
+	return mor, aft, nin
+}
+
 func main() {
 	// Connect to the database
 	dsn := "top:1234@tcp(127.0.0.1:8889)/NursePlan?parseTime=true"
@@ -64,18 +81,21 @@ func main() {
 
 	planNumberMapping := mapPlanwithPlantype(plans, planTypes)
 	planWithType := generatePlanWithTypeMapping(plans, planNumberMapping)
+	for i := 0; i < len(plans); i++ {
+		morning, afternoon, night := calculateMorning(i, planWithType)
+		fmt.Println("Morning shift for nurse :", night, morning, afternoon)
+	}
 
-	// Initialize Gin
-	router := gin.Default()
+	// router := gin.Default()
 
-	router.LoadHTMLGlob("templates/*")
-	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "schedule.html", gin.H{
-			"Nurses":          nurses,
-			"PlanWithType":    planWithType,
-			"GetPlanWithType": getPlanWithTypeForNurse,
-		})
-	})
+	// router.LoadHTMLGlob("templates/*")
+	// router.GET("/", func(c *gin.Context) {
+	// 	c.HTML(http.StatusOK, "schedule.html", gin.H{
+	// 		"Nurses":          nurses,
+	// 		"PlanWithType":    planWithType,
+	// 		"GetPlanWithType": getPlanWithTypeForNurse,
+	// 	})
+	// })
 
-	router.Run(":5555")
+	// router.Run(":5555")
 }
