@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,32 +10,41 @@
             font-family: Arial, sans-serif;
             margin: 20px;
         }
+
         h2 {
             text-align: center;
         }
+
         table {
             border-collapse: collapse;
             width: 100%;
             margin-top: 20px;
         }
-        th, td {
+
+        th,
+        td {
             border: 1px solid #ddd;
             padding: 12px;
             text-align: left;
         }
+
         th {
             background-color: #f2f2f2;
         }
+
         @media (max-width: 600px) {
             table {
                 font-size: 12px;
             }
-            th, td {
+
+            th,
+            td {
                 padding: 8px;
             }
         }
     </style>
 </head>
+
 <body>
     <h2>Nurse Shift Schedule</h2>
     <table>
@@ -82,52 +92,21 @@
                 <th>OT</th>
             </tr>
         </thead>
+
         <tbody>
-            {{range .}}
+            {{range $index, $nurse := .Nurses}}
             <tr>
-                <td>{{.ID}}</td>                
-                <td>{{.Firstname}}</td>
-                <td>{{.Lastname}}</td>
-                <td>{{.Day1}}</td>
-                <td>{{.Day2}}</td>
-                <td>{{.Day3}}</td>
-                <td>{{.Day4}}</td>
-                <td>{{.Day5}}</td>
-                <td>{{.Day6}}</td>
-                <td>{{.Day7}}</td>
-                <td>{{.Day8}}</td>
-                <td>{{.Day9}}</td>
-                <td>{{.Day10}}</td>
-                <td>{{.Day11}}</td>
-                <td>{{.Day12}}</td>
-                <td>{{.Day13}}</td>
-                <td>{{.Day14}}</td>
-                <td>{{.Day15}}</td>
-                <td>{{.Day16}}</td>
-                <td>{{.Day17}}</td>
-                <td>{{.Day18}}</td>
-                <td>{{.Day19}}</td>
-                <td>{{.Day20}}</td>
-                <td>{{.Day21}}</td>
-                <td>{{.Day22}}</td>
-                <td>{{.Day23}}</td>
-                <td>{{.Day24}}</td>
-                <td>{{.Day25}}</td>
-                <td>{{.Day26}}</td>
-                <td>{{.Day27}}</td>
-                <td>{{.Day28}}</td>
-                <td>{{.Day29}}</td>
-                <td>{{.Day30}}</td>
-                <td>{{.Day31}}</td>
-                <td>{{.Night}}</td>
-                <td>{{.Morning}}</td>
-                <td>{{.Afternoon}}</td>
-                <td>{{.Dayoff}}</td>
-                <td>{{.Oncall}}</td>
-                <td>{{.Ot}}</td>
+                <td>{{$nurse.ID}}</td>                
+                <td>{{$nurse.Firstname}}</td>
+                <td>{{$nurse.Lastname}}</td>
+                {{range $planType := call $.GetPlanWithType $index $.PlanWithType}}
+                    <td>{{$planType}}</td>
+                {{end}}
             </tr>
             {{end}}
         </tbody>
+
     </table>
 </body>
+
 </html>

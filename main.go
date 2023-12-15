@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"nurse_shift/model"
 	"reflect"
 
+	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -37,6 +39,15 @@ func generatePlanWithTypeMapping(plans []model.Plans, planNumberMapping map[int]
 	return planWithType
 }
 
+func getPlanWithTypeForNurse(nurseIndex int, planWithType []string) []string {
+	start := nurseIndex * 31
+	end := start + 31
+	if end > len(planWithType) {
+		end = len(planWithType)
+	}
+	return planWithType[start:end]
+}
+
 func main() {
 	// Connect to the database
 	dsn := "top:1234@tcp(127.0.0.1:8889)/NursePlan?parseTime=true"
@@ -45,7 +56,6 @@ func main() {
 		log.Fatal("Error connecting to the database:", err)
 	}
 
-	// Migrate the schema
 	db.Find(&plans)
 	db.Find(&planTypes)
 	db.Find(&hospitals)
@@ -54,5 +64,18 @@ func main() {
 
 	planNumberMapping := mapPlanwithPlantype(plans, planTypes)
 	planWithType := generatePlanWithTypeMapping(plans, planNumberMapping)
-	fmt.Println(planWithType)
+
+	// Initialize Gin
+	router := gin.Default()
+
+	router.LoadHTMLGlob("templates/*")
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "schedule.html", gin.H{
+			"Nurses":          nurses,
+			"PlanWithType":    planWithType,
+			"GetPlanWithType": getPlanWithTypeForNurse,
+		})
+	})
+
+	router.Run(":5555")
 }
