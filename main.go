@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"nurse_shift/model"
 	"reflect"
 
+	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -46,11 +48,18 @@ func getPlanWithTypeForNurse(nurseIndex int, planWithType []string) []string {
 	return planWithType[start:end]
 }
 
-func calculateMorning(nurseIndex int, planWithType []string) (int, int, int) {
+func calculateNursesShift(nurseIndex int, planWithType []string) []int {
 	planWithTypeForNurse := getPlanWithTypeForNurse(nurseIndex, planWithType)
+	var calnurseshift []int
 	mor := 0
 	aft := 0
 	nin := 0
+	off := 0
+	onc := 0
+	otv := 0
+	lev := 0
+	cav := 0
+	cat := 0
 	for _, planType := range planWithTypeForNurse {
 		if planType == "ช" || planType == "T" || planType == "ช/rบ" || planType == "ช/rด" || planType == "ช2" {
 			mor++
@@ -61,12 +70,30 @@ func calculateMorning(nurseIndex int, planWithType []string) (int, int, int) {
 		if planType == "ด" || planType == "rบ/ด" || planType == "rช/ด" {
 			nin++
 		}
+		if planType == "X" {
+			off++
+		}
+		if planType == "C" {
+			onc++
+		}
+		if planType == "rช/บ" || planType == "ช/rบ" || planType == "rบ/ด" || planType == "บ/rด" || planType == "rช/ด" || planType == "ช/rด" || planType == "x/ช" || planType == "x/บ" || planType == "x/ด" || planType == "rช/rบ" || planType == "rบ/rด" || planType == "rช/rด" {
+			otv++
+		}
+		if planType == "ล" {
+			lev++
+		}
+		if planType == "v" {
+			cav++
+		}
+		if planType == "T" {
+			cat++
+		}
 	}
-	return mor, aft, nin
+	calnurseshift = append(calnurseshift, nin, mor, aft, off, onc, otv, lev, cav, cat)
+	return calnurseshift
 }
 
 func main() {
-	// Connect to the database
 	dsn := "top:1234@tcp(127.0.0.1:8889)/NursePlan?parseTime=true"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -81,21 +108,24 @@ func main() {
 
 	planNumberMapping := mapPlanwithPlantype(plans, planTypes)
 	planWithType := generatePlanWithTypeMapping(plans, planNumberMapping)
+	var allNurseShifts [][]int
 	for i := 0; i < len(plans); i++ {
-		morning, afternoon, night := calculateMorning(i, planWithType)
-		fmt.Println("Morning shift for nurse :", night, morning, afternoon)
+		nurseshiftcal := calculateNursesShift(i, planWithType)
+		fmt.Println("Nurse", i+1, ":", nurseshiftcal)
+		allNurseShifts = append(allNurseShifts, nurseshiftcal)
 	}
 
-	// router := gin.Default()
+	router := gin.Default()
 
-	// router.LoadHTMLGlob("templates/*")
-	// router.GET("/", func(c *gin.Context) {
-	// 	c.HTML(http.StatusOK, "schedule.html", gin.H{
-	// 		"Nurses":          nurses,
-	// 		"PlanWithType":    planWithType,
-	// 		"GetPlanWithType": getPlanWithTypeForNurse,
-	// 	})
-	// })
+	router.LoadHTMLGlob("templates/*")
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "schedule.html", gin.H{
+			"Nurses":          nurses,
+			"PlanWithType":    planWithType,
+			"GetPlanWithType": getPlanWithTypeForNurse,
+			"CalNurseShifts":  allNurseShifts,
+		})
+	})
 
-	// router.Run(":5555")
+	router.Run(":5555")
 }

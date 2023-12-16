@@ -84,27 +84,38 @@
                 <th>Day29</th>
                 <th>Day30</th>
                 <th>Day31</th>
-                <th>Night</th>
-                <th>Morning</th>
-                <th>Afternoon</th>
-                <th>Dayoff</th>
+                <th>ด</th>
+                <th>ช</th>
+                <th>บ</th>
+                <th>off</th>
                 <th>Oncall</th>
                 <th>OT</th>
+                <th>ล</th>
+                <th>V</th>
+                <th>T</th>
             </tr>
         </thead>
+
 
         <tbody>
             {{range $index, $nurse := .Nurses}}
             <tr>
-                <td>{{$nurse.ID}}</td>                
+                <td>{{$nurse.ID}}</td>
                 <td>{{$nurse.Firstname}}</td>
                 <td>{{$nurse.Lastname}}</td>
                 {{range $planType := call $.GetPlanWithType $index $.PlanWithType}}
-                    <td>{{$planType}}</td>
+                <td>{{$planType}}</td>
+                {{end}}
+                {{range $nurseShiftIndex, $shiftCount := index $.CalNurseShifts $index}}
+                <td>{{$shiftCount}}</td>
                 {{end}}
             </tr>
             {{end}}
         </tbody>
+
+
+
+
 
     </table>
 </body>
