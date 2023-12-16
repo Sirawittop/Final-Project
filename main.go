@@ -116,7 +116,6 @@ func main() {
 	}
 
 	router := gin.Default()
-
 	router.LoadHTMLGlob("templates/*")
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "schedule.html", gin.H{
