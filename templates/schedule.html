@@ -35,10 +35,6 @@
             text-overflow: ellipsis;
         }
 
-        td.x-type {
-            color: red;
-        }
-
         th {
             background-color: #f2f2f2;
         }
@@ -60,17 +56,8 @@
             }
         }
 
-        /* Add styles for colored components */
         .red-ช {
             color: red;
-        }
-
-        .black-บ {
-            color: black;
-        }
-
-        .black-ช {
-            color: black;
         }
 
         .red-บ {
@@ -81,15 +68,10 @@
             color: red;
         }
 
-        .black-ด {
-            color: black;
-        }
-
         .red {
             color: red;
         }
     </style>
-
 </head>
 
 <body>
@@ -102,7 +84,7 @@
                 <th>1</th>
                 <th>2</th>
                 <th>3</th>
-                <th>3</th>
+                <th>4</th>
                 <th>5</th>
                 <th>6</th>
                 <th>7</th>
@@ -148,11 +130,12 @@
                 <td>{{$nurse.Firstname}} {{$nurse.Lastname}}</td>
                 {{range $planType := call $.GetPlanWithType $index $.PlanWithType}}
                 <!-- Add a conditional class for the cell based on typename -->
-                <td{{if eq $planType "X"}} class="x-type"{{else}} class="{{mapPlanTypeToClass $planType}}"{{end}}>{{$planType}}</td>
-                {{end}}
-                {{range $nurseShiftIndex, $shiftCount := index $.CalNurseShifts $index}}
-                <td>{{$shiftCount}}</td>
-                {{end}}
+                <td{{if eq $planType "X" }} class="red" {{else}} class="{{mapPlanTypeToClass $planType}}" {{end}}>
+                    {{$planType}}</td>
+                    {{end}}
+                    {{range $nurseShiftIndex, $shiftCount := index $.CalNurseShifts $index}}
+                    <td>{{$shiftCount}}</td>
+                    {{end}}
             </tr>
             {{end}}
         </tbody>

@@ -26,7 +26,6 @@ func mapPlanwithPlantype(plans []model.Plans, planTypes []model.Plantypes) map[i
 	}
 	return planNumberMapping
 }
-
 func generatePlanWithTypeMapping(plans []model.Plans, planNumberMapping map[int]string) []string {
 	var planWithType []string
 	for i := 0; i < len(plans); i++ {
@@ -39,7 +38,6 @@ func generatePlanWithTypeMapping(plans []model.Plans, planNumberMapping map[int]
 	}
 	return planWithType
 }
-
 func getPlanWithTypeForNurse(nurseIndex int, planWithType []string) []string {
 	start := nurseIndex * 31
 	end := start + 31
@@ -48,7 +46,6 @@ func getPlanWithTypeForNurse(nurseIndex int, planWithType []string) []string {
 	}
 	return planWithType[start:end]
 }
-
 func calculateNursesShift(nurseIndex int, planWithType []string) []int {
 	planWithTypeForNurse := getPlanWithTypeForNurse(nurseIndex, planWithType)
 	var calnurseshift []int
@@ -94,34 +91,14 @@ func calculateNursesShift(nurseIndex int, planWithType []string) []int {
 	return calnurseshift
 }
 
-// Update your Go code with this function
 func mapPlanTypeToClass(planTypeName string) string {
-	switch planTypeName {
-	case "rช/บ":
-		return "red-ช black-บ"
-	case "ช/rบ":
-		return "black-ช red-บ"
-	case "rบ/ด":
-		return "red-บ black-ด"
-	case "บ/rด":
-		return "black-บ red-ด"
-	case "rช/ด":
-		return "red-ช black-ด"
-	case "ช/rด":
-		return "black-ช red-ด"
-	case "x/ช":
-		return "red"
-	case "x/บ":
-		return "red"
-	case "x/ด":
-		return "red"
-	case "rช/rบ":
-		return "red-ช red-บ"
-	case "rบ/rด":
-		return "red-บ red-ด"
-	case "rช/rด":
-		return "red-ช red-ด"
-	default:
+	if planTypeName == "rช/บ" || planTypeName == "rช/rบ" || planTypeName == "rช/ด" || planTypeName == "x/ช" || planTypeName == "rช/rด" {
+		return "red-ช"
+	} else if planTypeName == "rบ/rด" || planTypeName == "rบ/ด" || planTypeName == "rช/rบ" || planTypeName == "x/บ" || planTypeName == "ช/rบ" {
+		return "red-บ"
+	} else if planTypeName == "บ/rด" || planTypeName == "ช/rด" || planTypeName == "x/ด" || planTypeName == "rบ/rด" || planTypeName == "rช/rด" {
+		return "red-ด"
+	} else {
 		return ""
 	}
 }
@@ -132,13 +109,11 @@ func main() {
 	if err != nil {
 		log.Fatal("Error connecting to the database:", err)
 	}
-
 	db.Find(&plans)
 	db.Find(&planTypes)
 	db.Find(&hospitals)
 	db.Find(&wards)
 	db.Find(&nurses)
-
 	planNumberMapping := mapPlanwithPlantype(plans, planTypes)
 	planWithType := generatePlanWithTypeMapping(plans, planNumberMapping)
 	var allNurseShifts [][]int
@@ -161,6 +136,5 @@ func main() {
 			"CalNurseShifts":  allNurseShifts,
 		})
 	})
-
 	router.Run(":5555")
 }
