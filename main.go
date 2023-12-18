@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"nurse_shift/model"
@@ -93,6 +94,38 @@ func calculateNursesShift(nurseIndex int, planWithType []string) []int {
 	return calnurseshift
 }
 
+// Update your Go code with this function
+func mapPlanTypeToClass(planTypeName string) string {
+	switch planTypeName {
+	case "rช/บ":
+		return "red-ช black-บ"
+	case "ช/rบ":
+		return "black-ช red-บ"
+	case "rบ/ด":
+		return "red-บ black-ด"
+	case "บ/rด":
+		return "black-บ red-ด"
+	case "rช/ด":
+		return "red-ช black-ด"
+	case "ช/rด":
+		return "black-ช red-ด"
+	case "x/ช":
+		return "red"
+	case "x/บ":
+		return "red"
+	case "x/ด":
+		return "red"
+	case "rช/rบ":
+		return "red-ช red-บ"
+	case "rบ/rด":
+		return "red-บ red-ด"
+	case "rช/rด":
+		return "red-ช red-ด"
+	default:
+		return ""
+	}
+}
+
 func main() {
 	dsn := "top:1234@tcp(127.0.0.1:8889)/NursePlan?parseTime=true"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
@@ -116,6 +149,9 @@ func main() {
 	}
 
 	router := gin.Default()
+	router.SetFuncMap(template.FuncMap{
+		"mapPlanTypeToClass": mapPlanTypeToClass,
+	})
 	router.LoadHTMLGlob("templates/*")
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "schedule.html", gin.H{
