@@ -10,6 +10,7 @@
             font-family: Arial, sans-serif;
             margin: 20px;
             overflow-x: auto;
+            width: 100%;
         }
 
         h2 {
@@ -21,8 +22,7 @@
             width: 100%;
             margin-top: 20px;
             overflow-x: auto;
-            font-size: 16px;
-
+            font-size: 12px;
         }
 
         th,
@@ -31,12 +31,19 @@
             padding: 12px;
             text-align: center;
             width: auto;
+            max-height: fit-content;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        td:nth-child(37) ,
-        th:nth-child(37) {
+
+        td:nth-child(37) {
             color: red;
         }
-        
+        td:nth-child(2) {
+        text-align: left; 
+    }
+
         th {
             background-color: #f2f2f2;
         }
@@ -60,8 +67,7 @@
         <thead>
             <tr>
                 <th>ที่</th>
-                <th>ชื่อ</th>
-                <th>นามสกุล</th>
+                <th>ชื่อ-สกุล</th>
                 <th>1</th>
                 <th>2</th>
                 <th>3</th>
@@ -104,14 +110,11 @@
                 <th>T</th>
             </tr>
         </thead>
-
-
         <tbody>
             {{range $index, $nurse := .Nurses}}
             <tr>
                 <td>{{$nurse.ID}}</td>
-                <td>{{$nurse.Firstname}}</td>
-                <td>{{$nurse.Lastname}}</td>
+                <td>{{$nurse.Firstname}} {{$nurse.Lastname}}</td>
                 {{range $planType := call $.GetPlanWithType $index $.PlanWithType}}
                 <td>{{$planType}}</td>
                 {{end}}
@@ -121,11 +124,6 @@
             </tr>
             {{end}}
         </tbody>
-
-
-
-
-
     </table>
 </body>
 
