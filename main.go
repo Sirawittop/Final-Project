@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"nurse_shift/model"
 	"reflect"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
@@ -19,6 +20,21 @@ var hospitals []model.Hospitals
 var wards []model.Wards
 var nurses []model.Nurses
 
+func mapPlanTypeToClass(planTypeName string) string {
+	switch {
+	case strings.Contains(planTypeName, "r") && strings.Contains(planTypeName, "ช"):
+		return "red-ช"
+	case strings.Contains(planTypeName, "r") && strings.Contains(planTypeName, "บ"):
+		return "red-บ"
+	case strings.Contains(planTypeName, "r") && strings.Contains(planTypeName, "ด"):
+		return "red-ด"
+	case planTypeName == "x/ช" || planTypeName == "x/บ" || planTypeName == "x/ด":
+		return "red"
+	default:
+		return ""
+	}
+}
+
 func mapPlanwithPlantype(plans []model.Plans, planTypes []model.Plantypes) map[int]string {
 	planNumberMapping := make(map[int]string)
 	for _, planType := range planTypes {
@@ -26,6 +42,7 @@ func mapPlanwithPlantype(plans []model.Plans, planTypes []model.Plantypes) map[i
 	}
 	return planNumberMapping
 }
+
 func generatePlanWithTypeMapping(plans []model.Plans, planNumberMapping map[int]string) []string {
 	var planWithType []string
 	for i := 0; i < len(plans); i++ {
@@ -38,6 +55,7 @@ func generatePlanWithTypeMapping(plans []model.Plans, planNumberMapping map[int]
 	}
 	return planWithType
 }
+
 func getPlanWithTypeForNurse(nurseIndex int, planWithType []string) []string {
 	start := nurseIndex * 31
 	end := start + 31
@@ -46,6 +64,7 @@ func getPlanWithTypeForNurse(nurseIndex int, planWithType []string) []string {
 	}
 	return planWithType[start:end]
 }
+
 func calculateNursesShift(nurseIndex int, planWithType []string) []int {
 	planWithTypeForNurse := getPlanWithTypeForNurse(nurseIndex, planWithType)
 	var calnurseshift []int
@@ -89,18 +108,6 @@ func calculateNursesShift(nurseIndex int, planWithType []string) []int {
 	}
 	calnurseshift = append(calnurseshift, nin, mor, aft, off, onc, otv, lev, cav, cat)
 	return calnurseshift
-}
-
-func mapPlanTypeToClass(planTypeName string) string {
-	if planTypeName == "rช/บ" || planTypeName == "rช/rบ" || planTypeName == "rช/ด" || planTypeName == "x/ช" || planTypeName == "rช/rด" {
-		return "red-ช"
-	} else if planTypeName == "rบ/rด" || planTypeName == "rบ/ด" || planTypeName == "rช/rบ" || planTypeName == "x/บ" || planTypeName == "ช/rบ" {
-		return "red-บ"
-	} else if planTypeName == "บ/rด" || planTypeName == "ช/rด" || planTypeName == "x/ด" || planTypeName == "rบ/rด" || planTypeName == "rช/rด" {
-		return "red-ด"
-	} else {
-		return ""
-	}
 }
 
 func main() {

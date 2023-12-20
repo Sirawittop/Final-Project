@@ -129,13 +129,13 @@
                 <td>{{$nurse.ID}}</td>
                 <td>{{$nurse.Firstname}} {{$nurse.Lastname}}</td>
                 {{range $planType := call $.GetPlanWithType $index $.PlanWithType}}
-                <!-- Add a conditional class for the cell based on typename -->
-                <td{{if eq $planType "X" }} class="red" {{else}} class="{{mapPlanTypeToClass $planType}}" {{end}}>
-                    {{$planType}}</td>
-                    {{end}}
-                    {{range $nurseShiftIndex, $shiftCount := index $.CalNurseShifts $index}}
+                    <!-- Add a conditional class for the cell based on typename -->
+                    <td{{if eq $planType "X"}} class="red" {{else}} class="{{mapPlanTypeToClass $planType}}" {{end}}>
+                        {{$planType}}</td>
+                {{end}}
+                {{range $nurseShiftIndex, $shiftCount := index $.CalNurseShifts $index}}
                     <td>{{$shiftCount}}</td>
-                    {{end}}
+                {{end}}
             </tr>
             {{end}}
         </tbody>
