@@ -126,7 +126,6 @@ func main() {
 	var allNurseShifts [][]int
 	for i := 0; i < len(plans); i++ {
 		nurseshiftcal := calculateNursesShift(i, planWithType)
-		fmt.Println("Nurse", i+1, ":", nurseshiftcal)
 		allNurseShifts = append(allNurseShifts, nurseshiftcal)
 	}
 

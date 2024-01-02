@@ -28,7 +28,7 @@
         th,
         td {
             border: 1px solid #ddd;
-            padding: 3px;
+            padding: 4px;
             text-align: center;
             white-space: nowrap;
             overflow: hidden;
@@ -54,18 +54,6 @@
             td {
                 padding: 8px;
             }
-        }
-
-        .red-ช {
-            color: red;
-        }
-
-        .red-บ {
-            color: red;
-        }
-
-        .red-ด {
-            color: red;
         }
 
         .red {
@@ -129,7 +117,6 @@
                 <td>{{$nurse.ID}}</td>
                 <td>{{$nurse.Firstname}} {{$nurse.Lastname}}</td>
                 {{range $planType := call $.GetPlanWithType $index $.PlanWithType}}
-                    <!-- Add a conditional class for the cell based on typename -->
                     <td{{if eq $planType "X"}} class="red" {{else}} class="{{mapPlanTypeToClass $planType}}" {{end}}>
                         {{$planType}}</td>
                 {{end}}
