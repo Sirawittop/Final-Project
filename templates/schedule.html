@@ -12,11 +12,11 @@
             overflow-x: auto;
             width: 100%;
         }
-
+    
         h2 {
             text-align: center;
         }
-
+    
         table {
             border-collapse: collapse;
             width: 100%;
@@ -24,42 +24,43 @@
             overflow-x: auto;
             font-size: 12px;
         }
-
+    
         th,
         td {
             border: 1px solid #ddd;
-            padding: 4px;
-            text-align: center;
+            padding: 2px;
+            text-align: center; /* Center align content */
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
+    
         th {
             background-color: #f2f2f2;
         }
-
+    
         td:nth-child(2) {
-            text-align: left;
+            text-align: center;
             max-width: 150px;
             overflow: hidden;
         }
-
+    
         @media (max-width: 600px) {
             table {
                 font-size: 11px;
             }
-
+    
             th,
             td {
                 padding: 8px;
             }
         }
-
+    
         .red {
             color: red;
         }
     </style>
+    
 </head>
 
 <body>
@@ -110,29 +111,31 @@
                 <th>ล</th>
                 <th>V</th>
                 <th>T</th>
+                <th>OTcal</th>
             </tr>
         </thead>
-
-
         <tbody>
-            {{range $index, $nurse := .Nurses}}
-            <tr>
-                <td>{{$nurse.ID}}</td>
-                <td>{{$nurse.Firstname}}</td>
-                <td>{{$nurse.Lastname}}</td>
-                {{range $planType := call $.GetPlanWithType $index $.PlanWithType}}
-                <td>{{$planType}}</td>
-                {{end}}
-                {{range $nurseShiftIndex, $shiftCount := index $.CalNurseShifts $index}}
-                <td>{{$shiftCount}}</td>
-                {{end}}
-            </tr>
+            {{range $index, $nurse := $.Nurses}}
+                <tr>
+                    <td>{{$nurse.ID}}</td>
+                    <td>{{$nurse.Firstname}}</td>
+                    <td>{{$nurse.Lastname}}</td>
+                    {{range $planType := call $.GetPlanWithType $index $.PlanWithType}}
+                        <td>{{$planType}}</td>
+                    {{end}}
+                    {{range $nurseShiftIndex, $shiftCount := index $.CalNurseShifts $index}}
+                        <td>{{$shiftCount}}</td>
+                    {{end}}
+                    
+                    {{if $.nurseOT}}
+                        <td>{{index $.nurseOT $index}}</td>
+                    {{else}}
+                        <td>N/A</td>
+                    {{end}}
+                </tr>
             {{end}}
         </tbody>
-
-
-
-
+        
 
     </table>
 </body>

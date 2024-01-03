@@ -19,6 +19,7 @@ var planTypes []model.Plantypes
 var hospitals []model.Hospitals
 var wards []model.Wards
 var nurses []model.Nurses
+var OTs []model.OT
 
 func mapPlanwithPlantype(plans []model.Plans, planTypes []model.Plantypes) map[int]string {
 	planNumberMapping := make(map[int]string)
@@ -119,6 +120,34 @@ func splitPlanTypeName(planTypeName string) string {
 	return ""
 }
 
+func calculateOT(nurseIndex int, planWithType []string, OTs []model.OT, plans []model.Plans) int {
+	planWithTypeForNurse := getPlanWithTypeForNurse(nurseIndex, planWithType)
+	otmor := 0
+	otaft := 0
+	otnin := 0
+
+	// Ot คิดยังไงเมื่อ OT/OT เช่น rด/rช คิดเป็น OT 1 หรือ OT 2
+	for _, planType := range planWithTypeForNurse {
+		if planType == "rด/บ" || planType == "x/ด" || planType == "rด/rบ" || planType == "rด/rช" {
+			otnin++
+		}
+		if planType == "rช/บ" || planType == "ด/rช" || planType == "x/ช" || planType == "rช/rบ" || planType == "rด/rช" {
+			otmor++
+		}
+		if planType == "ช/rบ" || planType == "ด/rบ" || planType == "rด/ช" || planType == "x/บ" || planType == "rช/rบ" || planType == "rด/rบ" {
+			otaft++
+		}
+	}
+	if plans[nurseIndex].OT == 1 {
+		return (OTs[0].Morning * otmor) + (OTs[0].Afternoon * otaft) + (OTs[0].Night * otnin)
+	} else if plans[nurseIndex].OT == 2 {
+		return (OTs[1].Morning * otmor) + (OTs[1].Afternoon * otaft) + (OTs[1].Night * otnin)
+	} else if plans[nurseIndex].OT == 3 {
+		return (OTs[2].Morning * otmor) + (OTs[2].Afternoon * otaft) + (OTs[2].Night * otnin)
+	}
+	return 0
+}
+
 func main() {
 	dsn := "top:1234@tcp(127.0.0.1:8889)/NursePlan?parseTime=true"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
@@ -130,6 +159,8 @@ func main() {
 	db.Find(&hospitals)
 	db.Find(&wards)
 	db.Find(&nurses)
+	db.Find(&OTs)
+
 	planNumberMapping := mapPlanwithPlantype(plans, planTypes)
 	planWithType := generatePlanWithTypeMapping(plans, planNumberMapping)
 	var allNurseShifts [][]int
@@ -137,6 +168,13 @@ func main() {
 		nurseshiftcal := calculateNursesShift(i, planWithType)
 		allNurseShifts = append(allNurseShifts, nurseshiftcal)
 	}
+
+	var nurseOT []int
+	for i := 0; i < len(plans); i++ {
+		nurseOT = append(nurseOT, calculateOT(i, planWithType, OTs, plans))
+	}
+
+	fmt.Println(nurseOT)
 
 	tmpl := template.Must(template.New("schedule.html").Funcs(template.FuncMap{
 		"splitPlanTypeName": splitPlanTypeName,
@@ -149,6 +187,7 @@ func main() {
 			"PlanWithType":    planWithType,
 			"GetPlanWithType": getPlanWithTypeForNurse,
 			"CalNurseShifts":  allNurseShifts,
+			"nurseOT":         nurseOT,
 		})
 	})
 

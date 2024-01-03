@@ -104,4 +104,15 @@ type Plans struct {
 	Day29      int
 	Day30      int
 	Day31      int
+	OT         int
+}
+
+type OT struct {
+	Id         int
+	Name       string
+	HospitalID int
+	WardID     int
+	Morning    int
+	Afternoon  int
+	Night      int
 }
