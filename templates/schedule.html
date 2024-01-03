@@ -68,11 +68,12 @@
         <thead>
             <tr>
                 <th>ที่</th>
-                <th>ชื่อ-สกุล</th>
+                <th>ชื่อ</th>
+                <th>นามสกุล</th>
                 <th>1</th>
                 <th>2</th>
                 <th>3</th>
-                <th>4</th>
+                <th>3</th>
                 <th>5</th>
                 <th>6</th>
                 <th>7</th>
@@ -111,21 +112,28 @@
                 <th>T</th>
             </tr>
         </thead>
+
+
         <tbody>
             {{range $index, $nurse := .Nurses}}
             <tr>
                 <td>{{$nurse.ID}}</td>
-                <td>{{$nurse.Firstname}} {{$nurse.Lastname}}</td>
+                <td>{{$nurse.Firstname}}</td>
+                <td>{{$nurse.Lastname}}</td>
                 {{range $planType := call $.GetPlanWithType $index $.PlanWithType}}
-                    <td{{if eq $planType "X"}} class="red" {{else}} class="{{mapPlanTypeToClass $planType}}" {{end}}>
-                        {{$planType}}</td>
+                <td>{{$planType}}</td>
                 {{end}}
                 {{range $nurseShiftIndex, $shiftCount := index $.CalNurseShifts $index}}
-                    <td>{{$shiftCount}}</td>
+                <td>{{$shiftCount}}</td>
                 {{end}}
             </tr>
             {{end}}
         </tbody>
+
+
+
+
+
     </table>
 </body>
 

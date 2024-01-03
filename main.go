@@ -20,21 +20,6 @@ var hospitals []model.Hospitals
 var wards []model.Wards
 var nurses []model.Nurses
 
-func mapPlanTypeToClass(planTypeName string) string {
-	switch {
-	case strings.Contains(planTypeName, "r") && strings.Contains(planTypeName, "ช"):
-		return "red-ช"
-	case strings.Contains(planTypeName, "r") && strings.Contains(planTypeName, "บ"):
-		return "red-บ"
-	case strings.Contains(planTypeName, "r") && strings.Contains(planTypeName, "ด"):
-		return "red-ด"
-	case planTypeName == "x/ช" || planTypeName == "x/บ" || planTypeName == "x/ด":
-		return "red"
-	default:
-		return ""
-	}
-}
-
 func mapPlanwithPlantype(plans []model.Plans, planTypes []model.Plantypes) map[int]string {
 	planNumberMapping := make(map[int]string)
 	for _, planType := range planTypes {
@@ -78,13 +63,13 @@ func calculateNursesShift(nurseIndex int, planWithType []string) []int {
 	cav := 0
 	cat := 0
 	for _, planType := range planWithTypeForNurse {
-		if planType == "ช" || planType == "T" || planType == "ช/rบ" || planType == "ช/rด" || planType == "ช2" {
+		if planType == "ช" || planType == "T" || planType == "ช/rบ" || planType == "rด/ช" || planType == "ช2" {
 			mor++
 		}
-		if planType == "บ" || planType == "rช/บ" || planType == "บ/rด" {
+		if planType == "บ" || planType == "rช/บ" || planType == "rด/บ" {
 			aft++
 		}
-		if planType == "ด" || planType == "rบ/ด" || planType == "rช/ด" {
+		if planType == "ด" || planType == "ด/rบ" || planType == "ด/rช" {
 			nin++
 		}
 		if planType == "X" {
@@ -93,7 +78,7 @@ func calculateNursesShift(nurseIndex int, planWithType []string) []int {
 		if planType == "C" {
 			onc++
 		}
-		if planType == "rช/บ" || planType == "ช/rบ" || planType == "rบ/ด" || planType == "บ/rด" || planType == "rช/ด" || planType == "ช/rด" || planType == "x/ช" || planType == "x/บ" || planType == "x/ด" || planType == "rช/rบ" || planType == "rบ/rด" || planType == "rช/rด" {
+		if planType == "rช/บ" || planType == "ช/rบ" || planType == "ด/rบ" || planType == "rด/บ" || planType == "ด/rช" || planType == "rด/ช" || planType == "x/ช" || planType == "x/บ" || planType == "x/ด" || planType == "rช/rบ" || planType == "rด/rบ" || planType == "rด/rช" {
 			otv++
 		}
 		if planType == "ล" {
@@ -108,6 +93,30 @@ func calculateNursesShift(nurseIndex int, planWithType []string) []int {
 	}
 	calnurseshift = append(calnurseshift, nin, mor, aft, off, onc, otv, lev, cav, cat)
 	return calnurseshift
+}
+
+func splitPlanTypeName(planTypeName string) string {
+	parts := strings.Split(planTypeName, "")
+	if parts[0] == "r" && parts[1] == "ด" && parts[3] == "ช" {
+		return "red-ด black-ช"
+	} else if parts[0] == "r" && parts[1] == "ด" && parts[3] == "บ" {
+		return "red-ด black-บ"
+	} else if parts[0] == "r" && parts[1] == "ช" && parts[3] == "บ" {
+		return "red-ช black-บ"
+	} else if parts[2] == "r" && parts[0] == "ด" && parts[3] == "ช" {
+		return "black-ด red-ช"
+	} else if parts[2] == "r" && parts[0] == "ด" && parts[3] == "บ" {
+		return "black-ด red-บ"
+	} else if parts[2] == "r" && parts[0] == "ช" && parts[3] == "บ" {
+		return "black-ช red-บ"
+	} else if parts[0] == "r" && parts[1] == "ด" && parts[3] == "r" && parts[4] == "ช" {
+		return "red-ด red-ช"
+	} else if parts[0] == "r" && parts[1] == "ด" && parts[3] == "r" && parts[4] == "บ" {
+		return "red-ด red-บ"
+	} else if parts[0] == "r" && parts[1] == "ช" && parts[3] == "r" && parts[4] == "บ" {
+		return "red-ช red-บ"
+	}
+	return ""
 }
 
 func main() {
@@ -129,11 +138,11 @@ func main() {
 		allNurseShifts = append(allNurseShifts, nurseshiftcal)
 	}
 
+	tmpl := template.Must(template.New("schedule.html").Funcs(template.FuncMap{
+		"splitPlanTypeName": splitPlanTypeName,
+	}).ParseFiles("templates/schedule.html"))
 	router := gin.Default()
-	router.SetFuncMap(template.FuncMap{
-		"mapPlanTypeToClass": mapPlanTypeToClass,
-	})
-	router.LoadHTMLGlob("templates/*")
+	router.SetHTMLTemplate(tmpl)
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "schedule.html", gin.H{
 			"Nurses":          nurses,
@@ -142,5 +151,6 @@ func main() {
 			"CalNurseShifts":  allNurseShifts,
 		})
 	})
+
 	router.Run(":5555")
 }
