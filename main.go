@@ -14,13 +14,6 @@ import (
 	"gorm.io/gorm"
 )
 
-var plans []model.Plans
-var planTypes []model.Plantypes
-var hospitals []model.Hospitals
-var wards []model.Wards
-var nurses []model.Nurses
-var OTs []model.OT
-
 func mapPlanwithPlantype(plans []model.Plans, planTypes []model.Plantypes) map[int]string {
 	planNumberMapping := make(map[int]string)
 	for _, planType := range planTypes {
@@ -154,6 +147,14 @@ func main() {
 	if err != nil {
 		log.Fatal("Error connecting to the database:", err)
 	}
+
+	var plans []model.Plans
+	var planTypes []model.Plantypes
+	var hospitals []model.Hospitals
+	var wards []model.Wards
+	var nurses []model.Nurses
+	var OTs []model.OT
+
 	db.Find(&plans)
 	db.Find(&planTypes)
 	db.Find(&hospitals)
@@ -174,13 +175,13 @@ func main() {
 		nurseOT = append(nurseOT, calculateOT(i, planWithType, OTs, plans))
 	}
 
-	fmt.Println(nurseOT)
-
 	tmpl := template.Must(template.New("schedule.html").Funcs(template.FuncMap{
 		"splitPlanTypeName": splitPlanTypeName,
 	}).ParseFiles("templates/schedule.html"))
+
 	router := gin.Default()
 	router.SetHTMLTemplate(tmpl)
+
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "schedule.html", gin.H{
 			"Nurses":          nurses,
@@ -189,6 +190,25 @@ func main() {
 			"CalNurseShifts":  allNurseShifts,
 			"nurseOT":         nurseOT,
 		})
+		db.Find(&plans)
+		db.Find(&planTypes)
+		db.Find(&hospitals)
+		db.Find(&wards)
+		db.Find(&nurses)
+		db.Find(&OTs)
+
+		planNumberMapping := mapPlanwithPlantype(plans, planTypes)
+		planWithType = generatePlanWithTypeMapping(plans, planNumberMapping)
+		allNurseShifts = [][]int{}
+		for i := 0; i < len(plans); i++ {
+			nurseshiftcal := calculateNursesShift(i, planWithType)
+			allNurseShifts = append(allNurseShifts, nurseshiftcal)
+		}
+
+		nurseOT = []int{}
+		for i := 0; i < len(plans); i++ {
+			nurseOT = append(nurseOT, calculateOT(i, planWithType, OTs, plans))
+		}
 	})
 
 	router.Run(":5555")
