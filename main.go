@@ -145,11 +145,10 @@ func mapNurseUser(nurse []model.User) map[uint]string {
 	return nurseMapping
 }
 
-func generatePlanWithUser(plans []model.Plans, planNumberMapping map[int]string, nurseMapping map[uint]string) map[uint]map[string][]string {
-	result := make(map[uint]map[string][]string)
+func generatePlanWithUser(plans []model.Plans, planNumberMapping map[int]string, nurseMapping map[uint]string) map[uint][]string {
+	result := make(map[uint][]string)
 	for _, plan := range plans {
 		nurseID := plan.Nurse_id
-		nurseName := nurseMapping[nurseID]
 
 		var planWithType []string
 		for j := 1; j <= 31; j++ {
@@ -159,13 +158,47 @@ func generatePlanWithUser(plans []model.Plans, planNumberMapping map[int]string,
 			planWithType = append(planWithType, planNumberMapping[planType])
 		}
 
-		if _, ok := result[nurseID]; !ok {
-			result[nurseID] = make(map[string][]string)
-		}
-		result[nurseID][nurseName] = planWithType
+		result[nurseID] = planWithType
 	}
 	return result
 }
+
+// function to map ward with nurse
+func mapWardWithNurse(wardID int) map[int]map[int]string {
+	wardMapping := make(map[int]map[int]string)
+
+	for _, nurse := range nurses {
+		if int(nurse.Ward_id) == wardID {
+			if wardMapping[int(nurse.Ward_id)] == nil {
+				wardMapping[int(nurse.Ward_id)] = make(map[int]string)
+			}
+			wardMapping[int(nurse.Ward_id)][int(nurse.ID)] = nurse.Firstname + " " + nurse.Lastname
+		}
+	}
+
+	return wardMapping
+}
+
+// func mapWardWithNurse(wards []model.Wards, nurses []model.User , wards_id int) map[int][]string {
+// 	wardMapping := make(map[int][]string)
+// 	for _, ward := range wards {
+// 		wardMapping[int(ward.ID)] = []string{ward.Name}
+// 	}
+// 	fmt.Println("wardMapping", wardMapping)
+// 	fmt.Println(wardMapping[2][0])
+
+// 	for _, nurse := range nurses {
+// 		fmt.Println("nurse", int(nurse.Ward_id))
+// 		if wardMapping[int(int(nurse.Ward_id))] != nil {
+// 			wardMapping[int(int(nurse.Ward_id))] = append(wardMapping[int(nurse.Ward_id)], nurse.Firstname+" "+nurse.Lastname)
+// 		}
+// 	}
+
+// 	fmt.Println("__________________________")
+// 	fmt.Println(wardMapping[2][1])
+
+// 	return wardMapping
+// }
 
 // make function to map nurse with plan
 
@@ -182,17 +215,24 @@ func main() {
 	db.Find(&nurses)
 	db.Find(&OTs)
 
-	planNumberMapping := mapPlanwithPlantype(plans, planTypes)
+	// fmt.Println("ward", wards)
 
-	planWithType := generatePlanWithTypeMapping(plans, planNumberMapping)
+	// planNumberMapping := mapPlanwithPlantype(plans, planTypes)
 
-	fmt.Println("planwithtype", planWithType)
+	// planWithType := generatePlanWithTypeMapping(plans, planNumberMapping)
 
-	nurseMapping := mapNurseUser(nurses)
+	// fmt.Println("planwithtype", planWithType)
 
-	planWithUser := generatePlanWithUser(plans, planNumberMapping, nurseMapping)
+	// nurseMapping := mapNurseUser(nurses)
 
-	fmt.Println("planWithUser", planWithUser)
+	// planWithUser := generatePlanWithUser(plans, planNumberMapping, nurseMapping)
+
+	// fmt.Println("planWithUser", planWithUser)
+
+	a := mapWardWithNurse(2)
+	fmt.Println("a", a)
+
+	// mapWardWithNurse(wards, nurses, 2)
 
 	// nursename := mapNurseUser(nurses)
 
