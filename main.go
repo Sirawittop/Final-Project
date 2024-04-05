@@ -145,6 +145,28 @@ func mapNurseUser(nurse []model.User) map[uint]string {
 	return nurseMapping
 }
 
+func generatePlanWithUser(plans []model.Plans, planNumberMapping map[int]string, nurseMapping map[uint]string) map[uint]map[string][]string {
+	result := make(map[uint]map[string][]string)
+	for _, plan := range plans {
+		nurseID := plan.Nurse_id
+		nurseName := nurseMapping[nurseID]
+
+		var planWithType []string
+		for j := 1; j <= 31; j++ {
+			dayField := fmt.Sprintf("Day%d", j)
+			field := reflect.ValueOf(plan).FieldByName(dayField)
+			planType := int(field.Uint())
+			planWithType = append(planWithType, planNumberMapping[planType])
+		}
+
+		if _, ok := result[nurseID]; !ok {
+			result[nurseID] = make(map[string][]string)
+		}
+		result[nurseID][nurseName] = planWithType
+	}
+	return result
+}
+
 // make function to map nurse with plan
 
 func main() {
@@ -160,9 +182,17 @@ func main() {
 	db.Find(&nurses)
 	db.Find(&OTs)
 
-	// planNumberMapping := mapPlanwithPlantype(plans, planTypes)
+	planNumberMapping := mapPlanwithPlantype(plans, planTypes)
 
-	// planWithType := generatePlanWithTypeMapping(plans, planNumberMapping)
+	planWithType := generatePlanWithTypeMapping(plans, planNumberMapping)
+
+	fmt.Println("planwithtype", planWithType)
+
+	nurseMapping := mapNurseUser(nurses)
+
+	planWithUser := generatePlanWithUser(plans, planNumberMapping, nurseMapping)
+
+	fmt.Println("planWithUser", planWithUser)
 
 	// nursename := mapNurseUser(nurses)
 
