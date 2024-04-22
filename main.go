@@ -145,10 +145,16 @@ func mapNurseUser(nurse []model.User) map[uint]string {
 	return nurseMapping
 }
 
-func generatePlanWithUser(plans []model.Plans, planNumberMapping map[int]string, nurseMapping map[uint]string) map[uint][]string {
-	result := make(map[uint][]string)
+func generatePlanWithUser(plans []model.Plans, planNumberMapping map[int]string, nurseMapping map[uint]string) map[string]map[uint][]string {
+	result := make(map[string]map[uint][]string)
 	for _, plan := range plans {
 		nurseID := plan.Nurse_id
+
+		// Initialize the inner map if not already initialized
+		updatedAtStr := plan.UpdatedAt.Format("2006 01")
+		if result[updatedAtStr] == nil {
+			result[updatedAtStr] = make(map[uint][]string)
+		}
 
 		var planWithType []string
 		for j := 1; j <= 31; j++ {
@@ -158,7 +164,7 @@ func generatePlanWithUser(plans []model.Plans, planNumberMapping map[int]string,
 			planWithType = append(planWithType, planNumberMapping[planType])
 		}
 
-		result[nurseID] = planWithType
+		result[updatedAtStr][nurseID] = planWithType
 	}
 	return result
 }
@@ -215,8 +221,13 @@ func main() {
 	db.Find(&nurses)
 	db.Find(&OTs)
 
-	fmt.Println("plans", plans)
-	fmt.Println(plans[0].CreatedAt)
+	planNumberMapping := mapPlanwithPlantype(plans, planTypes)
+
+	nurseMapping := mapNurseUser(nurses)
+
+	planWithUser := generatePlanWithUser(plans, planNumberMapping, nurseMapping)
+
+	fmt.Println("planWithUser", planWithUser)
 
 	// fmt.Println("ward", wards)
 
