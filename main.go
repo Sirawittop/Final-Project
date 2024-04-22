@@ -215,6 +215,9 @@ func main() {
 	db.Find(&nurses)
 	db.Find(&OTs)
 
+	fmt.Println("plans", plans)
+	fmt.Println(plans[0].CreatedAt)
+
 	// fmt.Println("ward", wards)
 
 	// planNumberMapping := mapPlanwithPlantype(plans, planTypes)
@@ -228,9 +231,6 @@ func main() {
 	// planWithUser := generatePlanWithUser(plans, planNumberMapping, nurseMapping)
 
 	// fmt.Println("planWithUser", planWithUser)
-
-	a := mapWardWithNurse(2)
-	fmt.Println("a", a)
 
 	// mapWardWithNurse(wards, nurses, 2)
 
