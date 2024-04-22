@@ -5,6 +5,7 @@ import (
 	"log"
 	"nurse_shift/model"
 	"reflect"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -208,6 +209,21 @@ func mapWardWithNurse(wardID int) map[int]map[int]string {
 
 // make function to map nurse with plan
 
+var db *gorm.DB
+
+func insertPlandb(hospitals_id int, ward_id int, nurse_id int, ot_id int) {
+	// Get current time
+	currentTime := time.Now()
+
+	// Insert plan with created_at and updated_at
+	result := db.Exec("INSERT INTO plans (hospitals_id, ward_id, nurse_id, ot_id,created_at, updated_at) VALUES (?,?,?,?,?,?)",
+		hospitals_id, ward_id, nurse_id, ot_id, currentTime, currentTime)
+
+	if result.Error != nil {
+		log.Fatalf("Failed to insert New Plan: %v", result.Error)
+	}
+	fmt.Println("Plan successfully inserted")
+}
 func main() {
 	dsn := "sirawittop:1234@tcp(127.0.0.1:3306)/NursePlans?parseTime=true"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
@@ -221,13 +237,25 @@ func main() {
 	db.Find(&nurses)
 	db.Find(&OTs)
 
-	planNumberMapping := mapPlanwithPlantype(plans, planTypes)
+	// planNumberMapping := mapPlanwithPlantype(plans, planTypes)
 
-	nurseMapping := mapNurseUser(nurses)
+	// nurseMapping := mapNurseUser(nurses)
 
-	planWithUser := generatePlanWithUser(plans, planNumberMapping, nurseMapping)
+	// planWithUser := generatePlanWithUser(plans, planNumberMapping, nurseMapping)
 
-	fmt.Println("planWithUser", planWithUser)
+	// fmt.Println("planWithUser", planWithUser)
+
+	insertPlandb(2, 2, 3, 2)
+	insertPlandb(2, 2, 4, 2)
+	insertPlandb(2, 2, 5, 2)
+	insertPlandb(2, 2, 6, 2)
+	insertPlandb(2, 2, 7, 2)
+	insertPlandb(2, 2, 8, 2)
+	insertPlandb(2, 2, 9, 2)
+	insertPlandb(2, 2, 10, 2)
+	insertPlandb(2, 2, 11, 2)
+	insertPlandb(2, 2, 12, 2)
+	insertPlandb(2, 2, 18, 2)
 
 	// fmt.Println("ward", wards)
 
